@@ -15,6 +15,8 @@ import uz.tuit.hrsystem.repository.UserRepository;
 import uz.tuit.hrsystem.repository.TokenRepository;
 import uz.tuit.hrsystem.service.UserService;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Set;
 
 @Component
@@ -44,8 +46,17 @@ public class DataLoader implements CommandLineRunner {
     @Value("${spring.sql.init.mode}")
     private String initMode;
 
+
+    public void getServerIp() throws UnknownHostException {
+        InetAddress address = InetAddress.getLocalHost();
+        String ipAddress = address.getHostAddress();
+
+        System.out.println("Server IP Address: " + ipAddress);
+    }
+
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws UnknownHostException {
+        getServerIp();
         if (initMode.equals("always")) {
             if (userRepository.count() == 0) {
 
