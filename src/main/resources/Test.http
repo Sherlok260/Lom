@@ -1,0 +1,39 @@
+### admin login
+POST http://localhost:8082/api/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "adminman"
+}
+
+
+### user login
+POST http://localhost:8082/api/login
+Content-Type: application/json
+
+{
+  "username": "shaxzod123",
+  "password": "shaxzod123"
+}
+
+
+###admin
+GET http://localhost:8082/api/getAllUsersInfo
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwNTMxMjk5MSwiZXhwIjoxNzA1MzIzNzkxfQ.Kh2s3g8jXigc5cmaPify6JZuLmF2AwiB1HDkpmJzCR3zZapwY3HlTjTsCkmhK3is-ujqfaR1u4_duxwMPGjeHw
+
+###user
+###admin
+GET http://localhost:8082/api/getAllUsersInfo
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzaGF4em9kMTIzIiwiaWF0IjoxNzA1MzEyOTkyLCJleHAiOjE3MDUzMjM3OTJ9.Eloc_fI9AeVLmAzih22TZHSKYNKmOTTIYt0LmXu8ru4B7UItpgoWZXNxqwvb5jEvfm5_aE3RyUeWpeKvMpZksw
+
+###
+POST http://localhost:8082/api/addProduct
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzaGF4em9kMTIzIiwiaWF0IjoxNzA1MzEyOTkyLCJleHAiOjE3MDUzMjM3OTJ9.Eloc_fI9AeVLmAzih22TZHSKYNKmOTTIYt0LmXu8ru4B7UItpgoWZXNxqwvb5jEvfm5_aE3RyUeWpeKvMpZksw
+
+{
+  "": "",
+}
