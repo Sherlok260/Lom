@@ -39,6 +39,12 @@ public class UserController {
         return ResponseEntity.ok(userService.refreshToken(token));
     }
 
+    @GetMapping("/logout")
+    @PreAuthorize("hasAnyRole({'ADMIN','USER'})")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok(userService.logout());
+    }
+
     @PostMapping(value = "/addProduct", consumes = {"multipart/form-data;application/json"})
     @PreAuthorize("hasAnyRole({'ADMIN','USER'})")
     public HttpEntity<?> addProduct(
@@ -61,19 +67,4 @@ public class UserController {
     public ResponseEntity<?> getAllProducts() {
         return ResponseEntity.ok(userService.getAllProductList());
     }
-
-//    @GetMapping("/getUserHistory")
-//    @PreAuthorize("hasRoels('USER', 'ADMIN')")
-//    public ResponseEntity<?> getUserHistory() {
-//        return ResponseEntity.ok(userService.getUserHistory());
-//    }
-
-
-//
-//    @PostMapping("/priceProduct")
-//    @PreAuthorize("hasRole('USER')")
-//    public ResponseEntity<?> priceProduct(@RequestBody List<ProductDto> productDtos) {
-//        return ResponseEntity.ok(userService.priceProduct(productDtos));
-//    }
-
 }

@@ -53,7 +53,7 @@ public class AdminController {
         return ResponseEntity.ok(userService.addProduct(product));
     }
 
-    @PostMapping("/editProduct")
+    @PutMapping("/editProduct")
     @PreAuthorize("hasRole('ADMIN')")
     public HttpEntity<?> editProduct(@RequestBody Product product) {
         return ResponseEntity.ok(userService.editProduct(product));

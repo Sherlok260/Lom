@@ -141,6 +141,7 @@ public class UserService {
             user.setAddress(dto.getAddress());
             user.setCard_number(dto.getCardNumber());
             user.setPhoneNumber(dto.getPhoneNumber());
+            user.setLegal(dto.isLegal());
 
             Token token = new Token();
             token.setType("ACCESS_TOKEN");
@@ -187,6 +188,7 @@ public class UserService {
             user.setAddress(dto.getAddress());
             user.setCard_number(dto.getCardNumber());
             user.setPhoneNumber(dto.getPhoneNumber());
+            user.setLegal(dto.isLegal());
 
             userRepository.save(user);
 
