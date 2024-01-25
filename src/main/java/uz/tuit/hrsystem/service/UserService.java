@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -107,11 +108,13 @@ public class UserService {
         }
     }
 
+    @Transactional
     public ApiResponse logout() {
         try {
             String phoneNumber = JwtFilter.getphoneNumber;
             User user = userRepository.findByPhoneNumber(phoneNumber).get();
-            tokenRepository.deleteAll(user.getTokens());
+//            tokenRepository.deleteAll(user.getTokens());
+            tokenRepository.deleteByUserId(user.getId());
             return new ApiResponse("success logout", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -320,7 +323,7 @@ public class UserService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return new ApiResponse("failed", false);
+            return new ApiResponse("Image size or format exception", false);
         }
     }
 

@@ -11,7 +11,8 @@ import java.util.*;
 @Entity(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class User implements UserDetails {
 
     @Id
@@ -25,6 +26,8 @@ public class User implements UserDetails {
     private String card_number;
     private String password;
     private boolean isLegal = false;
+
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Token> tokens = new ArrayList<>();

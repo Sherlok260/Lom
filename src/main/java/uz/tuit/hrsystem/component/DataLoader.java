@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import uz.tuit.hrsystem.entity.Product;
 import uz.tuit.hrsystem.entity.Role;
 import uz.tuit.hrsystem.entity.User;
 import uz.tuit.hrsystem.jwt.JwtProvider;
@@ -82,6 +83,13 @@ public class DataLoader implements CommandLineRunner {
 
                 userService.signUp2(new RegisterDto("Shaxzod", "Murtozaqulov", "+998939320618", "Toshkent", "8600312912121212", "shaxzod123", false));
                 userService.signUp2(new RegisterDto("Oybek", "Jumanov", "+998956558989", "Toshkent","8600312912121212", "oybek123", false));
+
+                Product product = new Product();
+                product.setName("Mis");
+                product.setPrice(2000);
+
+                userService.addProduct(product);
+
             }
         }
     }

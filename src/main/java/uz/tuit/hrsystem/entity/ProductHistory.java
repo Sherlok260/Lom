@@ -24,7 +24,7 @@ public class ProductHistory {
     private LocalDate created_date;
     private boolean is_active;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 

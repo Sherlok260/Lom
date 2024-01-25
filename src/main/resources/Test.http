@@ -1,10 +1,15 @@
+GET http://localhost:8080/api/logout
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDYwOTI5MjYsInN1YiI6Iis5OTg5MzkzMjA2MTgiLCJhdXRoIjoiUk9MRV9VU0VSIn0.as4uQrfMdm7Vq8tJASH54ipuf42ej5h98laL3o18Yr8
+
+###
 ### admin login
-POST http://localhost:8082/api/login
+POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "adminman"
+  "phoneNumber": "+998939320618",
+  "password": "shaxzod123"
 }
 
 
@@ -35,5 +40,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzaGF4em9kMTIzIiwiaWF0IjoxNzA1MzEyOTkyLCJleHAiOjE3MDUzMjM3OTJ9.Eloc_fI9AeVLmAzih22TZHSKYNKmOTTIYt0LmXu8ru4B7UItpgoWZXNxqwvb5jEvfm5_aE3RyUeWpeKvMpZksw
 
 {
-  "": "",
+  "": ""
 }
+
+
