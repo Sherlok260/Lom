@@ -306,20 +306,23 @@ public class UserService {
 
     public ApiResponse addProduct(String productName, double weight, MultipartFile multipartFile) {
         try {
-            if (productRepository.checkProductName(productName)) {
-                String path = saveImageInfo(multipartFile);
-                ProductHistory productHistory = new ProductHistory();
-                productHistory.setName(productName);
-                productHistory.setWeight(weight);
-                productHistory.setImg_path(path);
-                productHistory.set_active(true);
-                productHistory.setCreated_date(LocalDate.now());
-                productHistory.setUser(userRepository.findByPhoneNumber(JwtFilter.getphoneNumber).get());
-                productHistoryRepository.save(productHistory);
-                return new ApiResponse("success", true);
-            } else {
-                return new ApiResponse("Bunday maxsulot bazada topilmadi", false);
-            }
+
+            return new ApiResponse("productName:" + productName + ", weight:" + weight, true, multipartFile.getName() + ", " + multipartFile.getOriginalFilename() + ", " + multipartFile.getSize() + ", " + multipartFile.getContentType());
+
+//            if (productRepository.checkProductName(productName)) {
+//                String path = saveImageInfo(multipartFile);
+//                ProductHistory productHistory = new ProductHistory();
+//                productHistory.setName(productName);
+//                productHistory.setWeight(weight);
+//                productHistory.setImg_path(path);
+//                productHistory.set_active(true);
+//                productHistory.setCreated_date(LocalDate.now());
+//                productHistory.setUser(userRepository.findByPhoneNumber(JwtFilter.getphoneNumber).get());
+//                productHistoryRepository.save(productHistory);
+//                return new ApiResponse("success", true);
+//            } else {
+//                return new ApiResponse("Bunday maxsulot bazada topilmadi", false);
+//            }
 
         } catch (Exception e) {
             e.printStackTrace();
