@@ -1,6 +1,7 @@
 package uz.tuit.hrsystem.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class UserController {
     public HttpEntity<?> addProduct(
             @RequestParam("product") String product_name,
             @RequestParam("weight") double weight,
-            @RequestParam("file") MultipartFile multipartFile)
+            @NonNull @RequestParam("file") MultipartFile multipartFile)
     {
         ApiResponse apiResponse = userService.addProduct(product_name, weight, multipartFile);
         return ResponseEntity.ok(apiResponse);
