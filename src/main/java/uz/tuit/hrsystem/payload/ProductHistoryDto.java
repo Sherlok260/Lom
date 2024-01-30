@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public interface ProductHistoryDto {
     Long getUser_id();
-    Long getProduct_img_id();
+    String getProduct_img_path();
     String getFirst_name();
     String getLast_name();
     String getAddress();

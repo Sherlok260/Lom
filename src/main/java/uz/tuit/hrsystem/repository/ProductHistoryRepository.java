@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ProductHistoryRepository extends JpaRepository<ProductHistory, Long> {
 
-    @Query(value = "select u.id as user_id, p.id as product_img_id, u.first_name, u.last_name, u.address, u.phone_number, p.name, p.weight, p.created_date from product_history p left join users u on u.id=p.user_id order by p.created_date desc", nativeQuery = true)
+    @Query(value = "select u.id as user_id, p.img_path as product_img_path, u.first_name, u.last_name, u.address, u.phone_number, p.name, p.weight, p.created_date from product_history p left join users u on u.id=p.user_id order by p.created_date desc", nativeQuery = true)
     List<ProductHistoryDto> getAll();
 
 }

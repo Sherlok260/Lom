@@ -35,6 +35,9 @@ import org.springframework.core.io.UrlResource;
 @Service
 public class UserService {
 
+    @Value("${file.path}")
+    String path;
+
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -307,22 +310,22 @@ public class UserService {
     public ApiResponse addProduct(String productName, double weight, MultipartFile multipartFile) {
         try {
 
-            return new ApiResponse("productName:" + productName + ", weight:" + weight, true, multipartFile.getName() + ", " + multipartFile.getOriginalFilename() + ", " + multipartFile.getSize() + ", " + multipartFile.getContentType());
+//            return new ApiResponse("productName:" + productName + ", weight:" + weight, true, multipartFile.getName() + ", " + multipartFile.getOriginalFilename() + ", " + multipartFile.getSize() + ", " + multipartFile.getContentType());
 
-//            if (productRepository.checkProductName(productName)) {
-//                String path = saveImageInfo(multipartFile);
-//                ProductHistory productHistory = new ProductHistory();
-//                productHistory.setName(productName);
-//                productHistory.setWeight(weight);
-//                productHistory.setImg_path(path);
-//                productHistory.set_active(true);
-//                productHistory.setCreated_date(LocalDate.now());
-//                productHistory.setUser(userRepository.findByPhoneNumber(JwtFilter.getphoneNumber).get());
-//                productHistoryRepository.save(productHistory);
-//                return new ApiResponse("success", true);
-//            } else {
-//                return new ApiResponse("Bunday maxsulot bazada topilmadi", false);
-//            }
+            if (productRepository.checkProductName(productName)) {
+                String path = saveImageInfo(multipartFile);
+                ProductHistory productHistory = new ProductHistory();
+                productHistory.setName(productName);
+                productHistory.setWeight(weight);
+                productHistory.setImg_path(path);
+                productHistory.set_active(true);
+                productHistory.setCreated_date(LocalDate.now());
+                productHistory.setUser(userRepository.findByPhoneNumber(JwtFilter.getphoneNumber).get());
+                productHistoryRepository.save(productHistory);
+                return new ApiResponse("success", true);
+            } else {
+                return new ApiResponse("Bunday maxsulot bazada topilmadi", false);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -389,26 +392,23 @@ public class UserService {
 
     public String saveImageInfo(MultipartFile multipartFile) throws IOException {
 
-        String imagesFolder = "src/main/resources/images";
+//        String imagesFolder = "src/main/resources/images";
 
         UUID uuid = UUID.randomUUID();
         String originalFilename = multipartFile.getOriginalFilename();
         String fileType = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = uuid.toString() + fileType;
 
-        // Build the path to save the file
-        Path filePath = Paths.get(imagesFolder, fileName);
+        Path filePath = Paths.get(path, fileName);
 
-        // Check if the folder exists, if not, create it
         if (!Files.exists(filePath.getParent())) {
             Files.createDirectories(filePath.getParent());
         }
 
-        // Save the file to the specified path
         Files.copy(multipartFile.getInputStream(), filePath);
 
         // Return the relative path for later use, e.g., storing in a database
-        return Paths.get("images", fileName).toString();
+        return filePath.toString();
     }
 
 
