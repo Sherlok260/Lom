@@ -42,7 +42,7 @@ public class AdminController {
     }
 
     @GetMapping("/getAllProductHistory")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public HttpEntity<?> getAllProductHistory() {
         return ResponseEntity.ok(userService.getAllProductHistory());
     }
