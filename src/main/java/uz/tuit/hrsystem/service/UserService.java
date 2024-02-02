@@ -145,7 +145,6 @@ public class UserService {
             user.setEnabled(true);
             user.setVerified(false);
             user.setAddress(dto.getAddress());
-            user.setCard_number(dto.getCardNumber());
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setLegal(dto.isLegal());
 
@@ -192,7 +191,6 @@ public class UserService {
             user.setEnabled(true);
             user.setVerified(true);
             user.setAddress(dto.getAddress());
-            user.setCard_number(dto.getCardNumber());
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setLegal(dto.isLegal());
 
@@ -271,7 +269,6 @@ public class UserService {
             userDto.setLastName(user.getLastName());
             userDto.setPhoneNumber(user.getPhoneNumber());
             userDto.setAddress(user.getAddress());
-            userDto.setCardNumber(user.getCard_number());
 
             return new ApiResponse("success", true, userDto);
 
@@ -294,7 +291,6 @@ public class UserService {
                 userDto.setLastName(user.getLastName());
                 userDto.setPhoneNumber(user.getPhoneNumber());
                 userDto.setAddress(user.getAddress());
-                userDto.setCardNumber(user.getCard_number());
 
                 userDtoList.add(userDto);
 
@@ -436,6 +432,16 @@ public class UserService {
             verify.setUser_id(user.getId());
             verify.setCode(1111L);
             verifyRepository.save(verify);
+        }
+    }
+
+    public ApiResponse getProductHistory() {
+        try {
+            String phoneNumber = JwtFilter.getphoneNumber;
+            return new ApiResponse("success", true, productHistoryRepository.getByUserId(userRepository.findByPhoneNumber(phoneNumber).get().getId()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
         }
     }
 }

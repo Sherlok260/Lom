@@ -23,11 +23,8 @@ public class User implements UserDetails {
     private String lastName;
     private String phoneNumber;
     private String address;
-    private String card_number;
     private String password;
     private boolean isLegal = false;
-
-
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Token> tokens = new ArrayList<>();

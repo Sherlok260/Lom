@@ -68,4 +68,11 @@ public class UserController {
     public ResponseEntity<?> getAllProducts() {
         return ResponseEntity.ok(userService.getAllProductList());
     }
+
+    @GetMapping("/getProductHistory")
+    @PreAuthorize("hasAnyRole({'USER', 'ADMIN'})")
+    public ResponseEntity<?> getProductHistory() {
+        return ResponseEntity.ok(userService.getProductHistory());
+    }
+
 }
