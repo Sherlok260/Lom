@@ -38,6 +38,9 @@ public class UserService {
     @Value("${file.path}")
     String path;
 
+    @Value("${domain.file.path}")
+    String d_path;
+
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -403,8 +406,7 @@ public class UserService {
 
         Files.copy(multipartFile.getInputStream(), filePath);
 
-        // Return the relative path for later use, e.g., storing in a database
-        return filePath.toString();
+        return d_path + fileName;
     }
 
 
