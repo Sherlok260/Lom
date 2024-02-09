@@ -2,10 +2,6 @@ package uz.tuit.hrsystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -67,6 +63,12 @@ public class UserService {
 
     @Autowired
     ProductHistoryRepository productHistoryRepository;
+
+    @Autowired
+    BranchRepository branchRepository;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
 
     @Autowired
     AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -306,7 +308,7 @@ public class UserService {
         }
     }
 
-    public ApiResponse addProduct(String productName, double weight, MultipartFile multipartFile) {
+    public ApiResponse addProduct(String productName, double weight, String branch, String department,MultipartFile multipartFile) {
         try {
 
 //            return new ApiResponse("productName:" + productName + ", weight:" + weight, true, multipartFile.getName() + ", " + multipartFile.getOriginalFilename() + ", " + multipartFile.getSize() + ", " + multipartFile.getContentType());
@@ -319,6 +321,8 @@ public class UserService {
                 productHistory.setImg_path(path);
                 productHistory.set_active(true);
                 productHistory.setCreated_date(LocalDate.now());
+                productHistory.setBranch(branch);
+                productHistory.setDepartment(department);
                 productHistory.setUser(userRepository.findByPhoneNumber(JwtFilter.getphoneNumber).get());
                 productHistoryRepository.save(productHistory);
                 return new ApiResponse("success", true);
@@ -338,17 +342,6 @@ public class UserService {
         } catch (Exception e) {
             e.printStackTrace();
             return new ApiResponse("failed", false);
-        }
-    }
-
-    public Resource getProductImg(Long product_id) {
-        try {
-            String img_path = productHistoryRepository.findById(product_id).get().getImg_path();
-            Path dirPath = Paths.get("src/main/resources/" + img_path);
-            return new UrlResource(dirPath.toUri());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
     }
 
@@ -409,7 +402,6 @@ public class UserService {
         return d_path + fileName;
     }
 
-
     public ApiResponse salom() {
         String getRole = JwtFilter.getRole;
         String message = "";
@@ -441,6 +433,90 @@ public class UserService {
         try {
             String phoneNumber = JwtFilter.getphoneNumber;
             return new ApiResponse("success", true, productHistoryRepository.getByUserId(userRepository.findByPhoneNumber(phoneNumber).get().getId()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
+        }
+    }
+
+    public ApiResponse getAllBranch() {
+        try {
+            return new ApiResponse("success", true, branchRepository.findAll());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
+        }
+    }
+
+    public ApiResponse createBranch(String branchName) {
+        try {
+            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
+            if (optionalBranch.isPresent()) {
+                return new ApiResponse("branch elready exicts.", false);
+            } else {
+                Branch branch = new Branch();
+                branch.setName(branchName);
+                return new ApiResponse("branch success created", true, branchRepository.save(branch));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
+        }
+    }
+
+    public ApiResponse deleteBranch(String branchName) {
+        try {
+            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
+            if (optionalBranch.isPresent()) {
+                branchRepository.deleteById(optionalBranch.get().getId());
+                return new ApiResponse("branch successfully deleted.", true);
+            } else {
+                return new ApiResponse("branch name not found.", false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
+        }
+    }
+
+    public ApiResponse addDepartment(String branchName, String departmentName) {
+        try {
+            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
+            Optional<Department> optionalDepartment = departmentRepository.findByName(departmentName);
+            if (optionalBranch.isPresent()) {
+                if (optionalDepartment.isPresent()) {
+                    return new ApiResponse("branch elready exicts.", false);
+                } else {
+                    Department department = new Department();
+                    department.setName(departmentName);
+                    department.setBranch(optionalBranch.get());
+                    optionalBranch.get().getDepartments().add(departmentRepository.save(department));
+                    branchRepository.save(optionalBranch.get());
+                    return new ApiResponse("department successfully added to branch", true, optionalBranch.get());
+                }
+            } else {
+                return new ApiResponse("branch name not found", false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
+        }
+    }
+
+    public ApiResponse deleteDepartment(String branchName, String departmentName) {
+        try {
+            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
+            Optional<Department> optionalDepartment = departmentRepository.findByName(departmentName);
+            if (optionalBranch.isPresent()) {
+                if (optionalDepartment.isPresent()) {
+                    departmentRepository.deleteById(optionalDepartment.get().getId());
+                    return new ApiResponse("department successfully deleted.", true);
+                } else {
+                    return new ApiResponse("department name not found in this branch", false);
+                }
+            } else {
+                return new ApiResponse("branch name not found", false);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new ApiResponse("some error", false);

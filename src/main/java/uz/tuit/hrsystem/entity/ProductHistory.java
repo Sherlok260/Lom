@@ -23,6 +23,8 @@ public class ProductHistory {
     private String img_path;
     private LocalDate created_date;
     private boolean is_active;
+    private String branch;
+    private String department;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

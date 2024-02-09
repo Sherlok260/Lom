@@ -51,9 +51,11 @@ public class UserController {
     public HttpEntity<?> addProduct(
             @RequestParam("product") String product_name,
             @RequestParam("weight") double weight,
+            @RequestParam("branch") String branch,
+            @RequestParam("department") String department,
             @NonNull @RequestParam("file") MultipartFile multipartFile)
     {
-        ApiResponse apiResponse = userService.addProduct(product_name, weight, multipartFile);
+        ApiResponse apiResponse = userService.addProduct(product_name, weight, branch, department, multipartFile);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -75,4 +77,33 @@ public class UserController {
         return ResponseEntity.ok(userService.getProductHistory());
     }
 
+    @GetMapping("/getAllBranch")
+    @PreAuthorize("hasAnyRole({'USER', 'ADMIN'})")
+    public ResponseEntity<?> getAllBranch() {
+        return ResponseEntity.ok(userService.getAllBranch());
+    }
+
+    @PostMapping("/createBranch")
+    @PreAuthorize("hasAnyRole({'USER', 'ADMIN'})")
+    public ResponseEntity<?> createBranch(@RequestParam String branchName) {
+        return ResponseEntity.ok(userService.createBranch(branchName));
+    }
+
+    @DeleteMapping("/deleteBranch")
+    @PreAuthorize("hasAnyRole({'USER', 'ADMIN'})")
+    public ResponseEntity<?> deleteBranch(@RequestParam String branchName) {
+        return ResponseEntity.ok(userService.deleteBranch(branchName));
+    }
+
+    @PostMapping("/addDepartment")
+    @PreAuthorize("hasAnyRole({'USER', 'ADMIN'})")
+    public ResponseEntity<?> addDepartment(@RequestParam String branchName ,@RequestParam String departmentName) {
+        return ResponseEntity.ok(userService.addDepartment(branchName, departmentName));
+    }
+
+    @DeleteMapping("/deleteDepartment")
+    @PreAuthorize("hasAnyRole({'USER', 'ADMIN'})")
+    public ResponseEntity<?> deleteDepartment(@RequestParam String branchName, @RequestParam String departmentName) {
+        return ResponseEntity.ok(userService.deleteDepartment(branchName, departmentName));
+    }
 }

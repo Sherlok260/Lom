@@ -27,19 +27,19 @@ public class AdminController {
         return ResponseEntity.ok(userService.getUsersInfos());
     }
 
-    @GetMapping("/getProductImg/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getProductImg(@PathVariable("id") Long id) {
-        Resource resource = userService.getProductImg(id);
-
-        String contentType = "application/octet-stream";
-        String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-                .body(resource);
-    }
+//    @GetMapping("/getProductImg/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ResponseEntity<?> getProductImg(@PathVariable("id") Long id) {
+//        Resource resource = userService.getProductImg(id);
+//
+//        String contentType = "application/octet-stream";
+//        String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(contentType))
+//                .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+//                .body(resource);
+//    }
 
     @GetMapping("/getAllProductHistory")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")

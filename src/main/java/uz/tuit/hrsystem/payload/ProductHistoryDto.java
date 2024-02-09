@@ -11,5 +11,7 @@ public interface ProductHistoryDto {
     String getPhone_number();
     String getName();
     Double getWeight();
+    String getBranch();
+    String getDepartment();
     LocalDate getCreated_date();
 }
