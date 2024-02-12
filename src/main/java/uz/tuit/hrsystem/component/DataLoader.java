@@ -77,13 +77,13 @@ public class DataLoader implements CommandLineRunner {
                 admin.setLastName("Adminov");
                 admin.setPassword(passwordEncoder.encode("adminman"));
                 admin.setPhoneNumber("+998123456789");
+                admin.setEmail("admin@gmail.com");
                 admin.setEnabled(true);
                 admin.setVerified(true);
                 admin.setRoles(Set.of(admin_role));
                 userRepository.save(admin);
 
-                userService.signUp2(new RegisterDto("Shaxzod", "Murtozaqulov", "+998939320618", "Toshkent", "8600312912121212", "shaxzod123", false));
-                userService.signUp2(new RegisterDto("Oybek", "Jumanov", "+998956558989", "Toshkent", "8600312912121212", "oybek123", false));
+                userService.signUp2(new RegisterDto("Shaxzod", "Murtozaqulov", "+998939320618", "Toshkent", "shaxzod@gmail.com", "shaxzod123", false));
 
                 //Add default product
                 Product product = new Product();

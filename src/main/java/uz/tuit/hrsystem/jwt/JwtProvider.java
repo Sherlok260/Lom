@@ -63,34 +63,34 @@ public class JwtProvider {
         return Jwts
                 .builder()
                 .signWith(key, SignatureAlgorithm.HS256)
-                .setExpiration(new Date(System.currentTimeMillis() + expTime/6))
+                .setExpiration(new Date(System.currentTimeMillis() + expTime))
                 .setSubject(username)
                 .claim("auth", authorities)
                 .compact();
     }
 
-    public boolean validateToken(String token) {
-        DecodedJWT jwt = JWT.decode(token);
-        if( jwt.getExpiresAt().before(new Date())) {
-            System.out.println("token is expired");
-            return false;
-        }
-        System.out.println(jwt.getExpiresAt() + " and " + new Date());
-        return true;
-    }
-
 //    public boolean validateToken(String token) {
-//        try {
-//            Jwts
-//                    .parserBuilder()
-//                    .setSigningKey(key)
-//                    .build()
-//                    .parseClaimsJws(token);
-//            return true;
-//        } catch (Exception e) {
+//        DecodedJWT jwt = JWT.decode(token);
+//        if( jwt.getExpiresAt().before(new Date())) {
+//            System.out.println("token is expired");
 //            return false;
 //        }
+//        System.out.println(jwt.getExpiresAt() + " and " + new Date());
+//        return true;
 //    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts
+                    .parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public String getUsername(String token) {
         return Jwts

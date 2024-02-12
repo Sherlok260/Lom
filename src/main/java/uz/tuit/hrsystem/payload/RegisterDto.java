@@ -13,7 +13,7 @@ public class RegisterDto {
     private String lastName;
     private String phoneNumber;
     private String address;
-    private String cardNumber;
+    private String email;
     private String password;
     private boolean isLegal = false;
 

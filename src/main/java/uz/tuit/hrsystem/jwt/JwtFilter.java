@@ -6,12 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import uz.tuit.hrsystem.entity.Token;
@@ -26,6 +22,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
     public static String getphoneNumber;
+    public static String getEmail;
     public static String getToken;
     public static String getRole;
 
@@ -46,7 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
             token = token.substring(7);
             Optional<Token> optionalToken = tokenRepository.findByToken(token);
             if (jwtProvider.validateToken(token) && optionalToken.isPresent()) {
-                getphoneNumber = jwtProvider.getUsername(token);
+                getEmail = jwtProvider.getUsername(token);
                 getToken = token;
                 getRole = jwtProvider.getAuthentication(token).getName();
                 Authentication authentication =

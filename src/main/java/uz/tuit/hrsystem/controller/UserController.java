@@ -32,7 +32,30 @@ public class UserController {
 
     @PostMapping("/signUp")
     public ResponseEntity<?> register(@RequestBody RegisterDto dto) {
-        return ResponseEntity.ok(userService.signUp2(dto));
+        return ResponseEntity.ok(userService.signUp(dto));
+    }
+
+    @PostMapping("/registerConfirm")
+    @PreAuthorize("hasRole('AUTH')")
+    public ResponseEntity<?> registerConfirm(@RequestParam String code) {
+        return ResponseEntity.ok(userService.registerConfirm(code));
+    }
+
+    @GetMapping("/forgetPassword")
+    public HttpEntity<?> forgetPassword(@RequestParam String email) {
+        return ResponseEntity.ok(userService.forgetPassword(email));
+    }
+
+    @GetMapping("/forgetPasswordConfirm")
+    @PreAuthorize("hasRole('AUTH')")
+    public HttpEntity<?> forgetPasswordConfirm(@RequestParam String code) {
+        return ResponseEntity.ok(userService.forgetPasswordConfirm(code));
+    }
+
+    @GetMapping("/setNewPassword")
+    @PreAuthorize("hasRole('AUTH')")
+    public HttpEntity<?> setNewPassword(@RequestParam String confirmCode,@RequestParam String newPassword) {
+        return ResponseEntity.ok(userService.setNewPassword(confirmCode, newPassword));
     }
 
     @GetMapping("/refreshToken")

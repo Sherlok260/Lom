@@ -10,6 +10,7 @@ public interface ProductHistoryDto {
     String getAddress();
     String getPhone_number();
     String getName();
+    String getEmail();
     Double getWeight();
     String getBranch();
     String getDepartment();

@@ -14,6 +14,6 @@ public class UserDto {
     private String lastName;
     private String phoneNumber;
     private String address;
-    private String cardNumber;
+    private String email;
 
 }

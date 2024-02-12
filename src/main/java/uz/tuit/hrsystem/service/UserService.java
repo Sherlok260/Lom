@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 
 @Service
 public class UserService {
@@ -48,6 +47,9 @@ public class UserService {
 
     @Autowired
     TokenRepository tokenRepository;
+
+    @Autowired
+    MailService mailService;
 
     @Autowired
     UserRepository userRepository;
@@ -78,12 +80,12 @@ public class UserService {
         try {
 
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(new UsernamePasswordAuthenticationToken(
-                    dto.getPhoneNumber(),
+                    dto.getEmail(),
                     dto.getPassword()
             ));
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            User user = userRepository.findByPhoneNumber(dto.getPhoneNumber()).get();
+            User user = userRepository.findByEmail(dto.getEmail()).get();
 
             tokenRepository.deleteByUserId(user.getId());
 
@@ -112,15 +114,15 @@ public class UserService {
             return new ApiResponse("success yaxshi", true, new AccessRefreshTokenDto(a_token, r_token));
         } catch (Exception e) {
             e.printStackTrace();
-            return new ApiResponse("phoneNumber or password incorrect", false);
+            return new ApiResponse("email or password incorrect", false);
         }
     }
 
     @Transactional
     public ApiResponse logout() {
         try {
-            String phoneNumber = JwtFilter.getphoneNumber;
-            User user = userRepository.findByPhoneNumber(phoneNumber).get();
+            String email = JwtFilter.getEmail;
+            User user = userRepository.findByEmail(email).get();
 //            tokenRepository.deleteAll(user.getTokens());
             tokenRepository.deleteByUserId(user.getId());
             return new ApiResponse("success logout", true);
@@ -130,15 +132,146 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public ApiResponse forgetPassword(String email) {
+        try {
+            Optional<User> user = userRepository.findByEmail(email);
+            if (user.isPresent() && user.get().isVerified() && user.get().getRoles().stream().anyMatch(r -> r.getName().equals("USER"))) {
+                Optional<Token> optionalToken = user.get().getTokens().stream().filter(t -> t.getLevel().equals("TEMPORARY") && t.getForr().equals("FORGET_PASSWORD")).findFirst();
+                String token = jwtProvider.generateTokenForVerify(user.get().getUsername());
+                if (optionalToken.isPresent()) {
+                    if (jwtProvider.validateToken(optionalToken.get().getToken())) {
+                        return new ApiResponse("Parolni qayta tiklash uchun kod emailingizga yuborilgan. Iltimos Emailingizni tekshiring", true);
+                    } else {
+                        optionalToken.get().setToken(token);
+                        tokenRepository.save(optionalToken.get());
+                    }
+                } else {
+                    System.out.println("-----------------------------------------------------------------------------");
+                    System.out.println(token);
+                    System.out.println("------------------------------------------------------------------------");
+                    Token temporary_token = new Token();
+                    temporary_token.setUser(user.get());
+                    temporary_token.setToken(token);
+                    temporary_token.setLevel("TEMPORARY");
+                    temporary_token.setType("ACCESS_TOKEN");
+                    temporary_token.setForr("FORGET_PASSWORD");
+                    tokenRepository.save(temporary_token);
+                }
+                Long code = Long.valueOf(new Random().nextInt(((999999-100000)+1)+100000));
+                mailService.sendText(email, String.valueOf(code));
+
+                Verify verify = new Verify();
+                verify.setCode(code);
+                verify.setUser_id(user.get().getId());
+
+                verifyRepository.save(verify);
+
+                return new ApiResponse("Parolni qayta tiklash uchun kod emailingizga yuborildi", true, token);
+
+            } else return new ApiResponse("email xato", false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
+        }
+    }
+
+    @Transactional
+    public ApiResponse forgetPasswordConfirm(String code) {
+        try {
+            String token = JwtFilter.getToken;
+            if (jwtProvider.validateToken(token)) {
+                String email = jwtProvider.getUsername(token);
+                Optional<User> optionalUser = userRepository.findByEmail(email);
+                if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
+                    Token db_token = tokenRepository.findByToken(token).get();
+                    if (db_token.getForr().equals("FORGET_PASSWORD")) {
+                        Verify verify = verifyRepository.getByUserId(user.getId()).get();
+                        if (String.valueOf(verify.getCode()).equals(code)) {
+                            return new ApiResponse("code correct", true, token);
+                        }
+                        return new ApiResponse("code incorrect", false);
+                    }
+                    return new ApiResponse("token error", false);
+                }
+                return new ApiResponse("user not found", false);
+            }
+            return new ApiResponse("token error", false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
+        }
+    }
+
+    @Transactional
+    public ApiResponse setNewPassword(String confirmCode, String newPassword) {
+        try {
+            String token = JwtFilter.getToken;
+            Optional<Token> optionalToken = tokenRepository.findByToken(token);
+            Token tokenPresent = optionalToken.isPresent() ? optionalToken.get() : null;
+            if (tokenPresent != null && jwtProvider.validateToken(token) && tokenPresent.getForr().equals("FORGET_PASSWORD")) {
+                String email = jwtProvider.getUsername(token);
+                User db_user = userRepository.findByEmail(email).get();
+                Verify verify = verifyRepository.getByUserId(db_user.getId()).get();
+                if(String.valueOf(verify.getCode()).equals(confirmCode)) {
+                    db_user.setPassword(passwordEncoder.encode(newPassword));
+                    userRepository.save(db_user);
+                    verifyRepository.delete(verify);
+                    tokenRepository.deleteById(tokenPresent.getId());
+                    return new ApiResponse("Parol muvoffaqiyatli yangilandi. Ilovaga qaytib akkountingizga kirishingiz mumkin", true);
+                }
+                return new ApiResponse("confirm code incorrect", false);
+            }
+            return new ApiResponse("Token eskirgan. Iltimos amaliyotni qayta bajaring", false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse(e.getMessage(), false);
+        }
+    }
+
+    @Transactional
+    public ApiResponse registerConfirm(String code) {
+        try {
+            String token = JwtFilter.getToken;
+            if (jwtProvider.validateToken(token)) {
+                String email = jwtProvider.getUsername(token);
+                Optional<User> optionalUser = userRepository.findByEmail(email);
+                if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
+                    Token db_token = tokenRepository.findByToken(token).get();
+                    if (db_token.getForr().equals("REGISTER_CONFIRM")) {
+                        Verify verify = verifyRepository.getByUserId(user.getId()).get();
+                        if (String.valueOf(verify.getCode()).equals(code)) {
+                            tokenRepository.delete(db_token);
+                            verifyRepository.delete(verify);
+                            user.setVerified(true);
+                            userRepository.save(user);
+                            return new ApiResponse("Register success", true);
+                        }
+                        return new ApiResponse("code incorrect", false);
+                    }
+                    return new ApiResponse("token error", false);
+                }
+                return new ApiResponse("user not found", false);
+            }
+            return new ApiResponse("token error", false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
+        }
+    }
+
     public ApiResponse signUp(RegisterDto dto) {
         try {
 
-            Optional<User> userOptional = userRepository.findByPhoneNumber(dto.getPhoneNumber());
+            Optional<User> userOptional = userRepository.findByEmail(dto.getEmail());
 
             if (userOptional.isPresent()) {
                 if (userOptional.get().isEnabled() && userOptional.get().isVerified()) {
                     return new ApiResponse("This user is already registered", false);
                 }
+                verifyRepository.delete(verifyRepository.getByUserId(userOptional.get().getId()).get());
                 userRepository.delete(userOptional.get());
             }
 
@@ -151,6 +284,7 @@ public class UserService {
             user.setVerified(false);
             user.setAddress(dto.getAddress());
             user.setPhoneNumber(dto.getPhoneNumber());
+            user.setEmail(dto.getEmail());
             user.setLegal(dto.isLegal());
 
             Token token = new Token();
@@ -158,28 +292,27 @@ public class UserService {
             token.setLevel("TEMPORARY");
             token.setForr("REGISTER_CONFIRM");
 
-            String tokenForVerify = jwtProvider.generateTokenForVerify(dto.getPhoneNumber());
+            String tokenForVerify = jwtProvider.generateTokenForVerify(dto.getEmail());
 
             token.setToken(tokenForVerify);
             token.setUser(user);
             user.setTokens(List.of(token));
 
-            sendingVerificationCodeToUser(dto.getPhoneNumber());
-
             userRepository.save(user);
 
-            return new ApiResponse("Tasdiqlash kodi raqamingizga yuborildi!", true, token.getToken());
+            sendingVerificationCodeToUser(dto.getEmail());
+
+            return new ApiResponse("Tasdiqlash kodi emailingizga yuborildi!", true, token.getToken());
         } catch (Exception e) {
             e.printStackTrace();
             return new ApiResponse(e.getMessage(), false);
         }
     }
 
-
     public ApiResponse signUp2(RegisterDto dto) {
         try {
 
-            Optional<User> userOptional = userRepository.findByPhoneNumber(dto.getPhoneNumber());
+            Optional<User> userOptional = userRepository.findByEmail(dto.getEmail());
 
             if (userOptional.isPresent()) {
                 if (userOptional.get().isEnabled() && userOptional.get().isVerified()) {
@@ -197,6 +330,7 @@ public class UserService {
             user.setVerified(true);
             user.setAddress(dto.getAddress());
             user.setPhoneNumber(dto.getPhoneNumber());
+            user.setEmail(dto.getEmail());
             user.setLegal(dto.isLegal());
 
             userRepository.save(user);
@@ -211,12 +345,12 @@ public class UserService {
     public ApiResponse refreshToken(String refresh_token) {
         try {
             Optional<Token> db_refresh_token = tokenRepository.findByToken(refresh_token);
-            if(db_refresh_token.isPresent() && jwtProvider.validateToken(refresh_token) && db_refresh_token.get().getType().equals("REFRESH_TOKEN")) {
-                String phoneNumber = jwtProvider.getUsername(refresh_token);
-                Optional<User> optionalUser = userRepository.findByPhoneNumber(phoneNumber);
+            if (db_refresh_token.isPresent() && jwtProvider.validateToken(refresh_token) && db_refresh_token.get().getType().equals("REFRESH_TOKEN")) {
+                String email = jwtProvider.getUsername(refresh_token);
+                Optional<User> optionalUser = userRepository.findByEmail(email);
                 Token db_access_token = optionalUser.get().getTokens().stream().filter(t -> t.getForr().equals("ANY") && t.getType().equals("ACCESS_TOKEN")).findFirst().get();
-                String a_token = jwtProvider.generateToken(phoneNumber, optionalUser.get().getAuthorities(), "ACCESS_TOKEN");
-                String r_token = jwtProvider.generateToken(phoneNumber, optionalUser.get().getAuthorities(), "REFRESH_TOKEN");
+                String a_token = jwtProvider.generateToken(email, optionalUser.get().getAuthorities(), "ACCESS_TOKEN");
+                String r_token = jwtProvider.generateToken(email, optionalUser.get().getAuthorities(), "REFRESH_TOKEN");
                 db_access_token.setToken(a_token);
                 db_refresh_token.get().setToken(r_token);
                 tokenRepository.save(db_access_token);
@@ -233,14 +367,14 @@ public class UserService {
 
     public ApiResponse confirmSignUp(Long code) {
         try {
-            String phoneNumber = JwtFilter.getphoneNumber;
-            Optional<User> userOptional = userRepository.findByPhoneNumber(phoneNumber);
-            if(userOptional.isPresent()) {
+            String email = JwtFilter.getEmail;
+            Optional<User> userOptional = userRepository.findByEmail(email);
+            if (userOptional.isPresent()) {
                 User user = userOptional.get();
                 Optional<Verify> verifyOptional = verifyRepository.getByUserId(user.getId());
-                if(verifyOptional.isPresent()) {
+                if (verifyOptional.isPresent()) {
                     Verify verify = verifyOptional.get();
-                    if(verify.getCode().equals(code)) {
+                    if (verify.getCode().equals(code)) {
                         verifyRepository.delete(verifyOptional.get());
                         user.setEnabled(true);
                         user.setVerified(true);
@@ -264,8 +398,8 @@ public class UserService {
     public ApiResponse getUserInfo() {
 
         try {
-            String phoneNumber = JwtFilter.getphoneNumber;
-            Optional<User> userOptional = userRepository.findByPhoneNumber(phoneNumber);
+            String email = JwtFilter.getEmail;
+            Optional<User> userOptional = userRepository.findByEmail(email);
             User user = userOptional.get();
 
             UserDto userDto = new UserDto();
@@ -274,6 +408,7 @@ public class UserService {
             userDto.setLastName(user.getLastName());
             userDto.setPhoneNumber(user.getPhoneNumber());
             userDto.setAddress(user.getAddress());
+            userDto.setEmail(user.getEmail());
 
             return new ApiResponse("success", true, userDto);
 
@@ -296,6 +431,7 @@ public class UserService {
                 userDto.setLastName(user.getLastName());
                 userDto.setPhoneNumber(user.getPhoneNumber());
                 userDto.setAddress(user.getAddress());
+                userDto.setEmail(user.getEmail());
 
                 userDtoList.add(userDto);
 
@@ -308,7 +444,7 @@ public class UserService {
         }
     }
 
-    public ApiResponse addProduct(String productName, double weight, String branch, String department,MultipartFile multipartFile) {
+    public ApiResponse addProduct(String productName, double weight, String branch, String department, MultipartFile multipartFile) {
         try {
 
 //            return new ApiResponse("productName:" + productName + ", weight:" + weight, true, multipartFile.getName() + ", " + multipartFile.getOriginalFilename() + ", " + multipartFile.getSize() + ", " + multipartFile.getContentType());
@@ -323,7 +459,7 @@ public class UserService {
                 productHistory.setCreated_date(LocalDate.now());
                 productHistory.setBranch(branch);
                 productHistory.setDepartment(department);
-                productHistory.setUser(userRepository.findByPhoneNumber(JwtFilter.getphoneNumber).get());
+                productHistory.setUser(userRepository.findByEmail(JwtFilter.getEmail).get());
                 productHistoryRepository.save(productHistory);
                 return new ApiResponse("success", true);
             } else {
@@ -413,26 +549,37 @@ public class UserService {
         return new ApiResponse(message, true);
     }
 
-    public void sendingVerificationCodeToUser(String phoneNumber) {
-        Optional<User> userOptional = userRepository.findByPhoneNumber(phoneNumber);
-        if (userOptional.isPresent()) {
+    public ApiResponse sendingVerificationCodeToUser(String email) {
+        try {
+            Optional<User> userOptional = userRepository.findByEmail(email);
             User user = userOptional.get();
             Optional<Verify> verifyOptional = verifyRepository.getByUserId(user.getId());
             if (verifyOptional.isPresent()) {
                 Verify verify = verifyOptional.get();
                 verifyRepository.delete(verify);
             }
+
+            Long code = Long.valueOf(new Random().nextInt((999999-100000)+1)+100000);
+
+            ApiResponse apiResponse = mailService.sendText(email, String.valueOf(code));
+
             Verify verify = new Verify();
             verify.setUser_id(user.getId());
-            verify.setCode(1111L);
+            verify.setCode(code);
             verifyRepository.save(verify);
+
+            return apiResponse;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse("some error", false);
         }
     }
 
     public ApiResponse getProductHistory() {
         try {
-            String phoneNumber = JwtFilter.getphoneNumber;
-            return new ApiResponse("success", true, productHistoryRepository.getByUserId(userRepository.findByPhoneNumber(phoneNumber).get().getId()));
+            String email = JwtFilter.getEmail;
+            return new ApiResponse("success", true, productHistoryRepository.getByUserId(userRepository.findByEmail(email).get().getId()));
         } catch (Exception e) {
             e.printStackTrace();
             return new ApiResponse("some error", false);

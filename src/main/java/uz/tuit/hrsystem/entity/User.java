@@ -22,6 +22,7 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    private String email;
     private String address;
     private String password;
     private boolean isLegal = false;
@@ -45,7 +46,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.phoneNumber;
+        return this.email;
     }
 
     @Override
