@@ -586,87 +586,87 @@ public class UserService {
         }
     }
 
-    public ApiResponse getAllBranch() {
-        try {
-            return new ApiResponse("success", true, branchRepository.findAll());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ApiResponse("some error", false);
-        }
-    }
-
-    public ApiResponse createBranch(String branchName) {
-        try {
-            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
-            if (optionalBranch.isPresent()) {
-                return new ApiResponse("branch elready exicts.", false);
-            } else {
-                Branch branch = new Branch();
-                branch.setName(branchName);
-                return new ApiResponse("branch success created", true, branchRepository.save(branch));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ApiResponse("some error", false);
-        }
-    }
-
-    public ApiResponse deleteBranch(String branchName) {
-        try {
-            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
-            if (optionalBranch.isPresent()) {
-                branchRepository.deleteById(optionalBranch.get().getId());
-                return new ApiResponse("branch successfully deleted.", true);
-            } else {
-                return new ApiResponse("branch name not found.", false);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ApiResponse("some error", false);
-        }
-    }
-
-    public ApiResponse addDepartment(String branchName, String departmentName) {
-        try {
-            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
-            Optional<Department> optionalDepartment = departmentRepository.findByName(departmentName);
-            if (optionalBranch.isPresent()) {
-                if (optionalDepartment.isPresent()) {
-                    return new ApiResponse("branch elready exicts.", false);
-                } else {
-                    Department department = new Department();
-                    department.setName(departmentName);
-                    department.setBranch(optionalBranch.get());
-                    optionalBranch.get().getDepartments().add(departmentRepository.save(department));
-                    branchRepository.save(optionalBranch.get());
-                    return new ApiResponse("department successfully added to branch", true, optionalBranch.get());
-                }
-            } else {
-                return new ApiResponse("branch name not found", false);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ApiResponse("some error", false);
-        }
-    }
-
-    public ApiResponse deleteDepartment(String branchName, String departmentName) {
-        try {
-            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
-            Optional<Department> optionalDepartment = departmentRepository.findByName(departmentName);
-            if (optionalBranch.isPresent()) {
-                if (optionalDepartment.isPresent()) {
-                    departmentRepository.deleteById(optionalDepartment.get().getId());
-                    return new ApiResponse("department successfully deleted.", true);
-                } else {
-                    return new ApiResponse("department name not found in this branch", false);
-                }
-            } else {
-                return new ApiResponse("branch name not found", false);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ApiResponse("some error", false);
-        }
-    }
+//    public ApiResponse getAllBranch() {
+//        try {
+//            return new ApiResponse("success", true, branchRepository.findAll());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ApiResponse("some error", false);
+//        }
+//    }
+//
+//    public ApiResponse createBranch(String branchName) {
+//        try {
+//            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
+//            if (optionalBranch.isPresent()) {
+//                return new ApiResponse("branch elready exicts.", false);
+//            } else {
+//                Branch branch = new Branch();
+//                branch.setName(branchName);
+//                return new ApiResponse("branch success created", true, branchRepository.save(branch));
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ApiResponse("some error", false);
+//        }
+//    }
+//
+//    public ApiResponse deleteBranch(String branchName) {
+//        try {
+//            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
+//            if (optionalBranch.isPresent()) {
+//                branchRepository.deleteById(optionalBranch.get().getId());
+//                return new ApiResponse("branch successfully deleted.", true);
+//            } else {
+//                return new ApiResponse("branch name not found.", false);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ApiResponse("some error", false);
+//        }
+//    }
+//
+//    public ApiResponse addDepartment(String branchName, String departmentName) {
+//        try {
+//            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
+//            Optional<Department> optionalDepartment = departmentRepository.findByName(departmentName);
+//            if (optionalBranch.isPresent()) {
+//                if (optionalDepartment.isPresent()) {
+//                    return new ApiResponse("branch elready exicts.", false);
+//                } else {
+//                    Department department = new Department();
+//                    department.setName(departmentName);
+//                    department.setBranch(optionalBranch.get());
+//                    optionalBranch.get().getDepartments().add(departmentRepository.save(department));
+//                    branchRepository.save(optionalBranch.get());
+//                    return new ApiResponse("department successfully added to branch", true, optionalBranch.get());
+//                }
+//            } else {
+//                return new ApiResponse("branch name not found", false);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ApiResponse("some error", false);
+//        }
+//    }
+//
+//    public ApiResponse deleteDepartment(String branchName, String departmentName) {
+//        try {
+//            Optional<Branch> optionalBranch = branchRepository.findByName(branchName);
+//            Optional<Department> optionalDepartment = departmentRepository.findByName(departmentName);
+//            if (optionalBranch.isPresent()) {
+//                if (optionalDepartment.isPresent()) {
+//                    departmentRepository.deleteById(optionalDepartment.get().getId());
+//                    return new ApiResponse("department successfully deleted.", true);
+//                } else {
+//                    return new ApiResponse("department name not found in this branch", false);
+//                }
+//            } else {
+//                return new ApiResponse("branch name not found", false);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ApiResponse("some error", false);
+//        }
+//    }
 }
