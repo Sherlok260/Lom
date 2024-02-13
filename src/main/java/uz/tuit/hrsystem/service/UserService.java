@@ -66,11 +66,11 @@ public class UserService {
     @Autowired
     ProductHistoryRepository productHistoryRepository;
 
-    @Autowired
-    BranchRepository branchRepository;
-
-    @Autowired
-    DepartmentRepository departmentRepository;
+//    @Autowired
+//    BranchRepository branchRepository;
+//
+//    @Autowired
+//    DepartmentRepository departmentRepository;
 
     @Autowired
     AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -158,7 +158,7 @@ public class UserService {
                     temporary_token.setForr("FORGET_PASSWORD");
                     tokenRepository.save(temporary_token);
                 }
-                Long code = Long.valueOf(new Random().nextInt(((999999-100000)+1)+100000));
+                Long code = Long.valueOf(new Random().nextInt(900000) + 100000);
                 mailService.sendText(email, String.valueOf(code));
 
                 Verify verify = new Verify();
@@ -559,7 +559,7 @@ public class UserService {
                 verifyRepository.delete(verify);
             }
 
-            Long code = Long.valueOf(new Random().nextInt((999999-100000)+1)+100000);
+            Long code = Long.valueOf(new Random().nextInt(900000) + 100000);
 
             ApiResponse apiResponse = mailService.sendText(email, String.valueOf(code));
 

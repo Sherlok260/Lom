@@ -40,11 +40,11 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @Autowired
-    BranchRepository branchRepository;
+//    @Autowired
+//    BranchRepository branchRepository;
 
-    @Autowired
-    DepartmentRepository departmentRepository;
+//    @Autowired
+//    DepartmentRepository departmentRepository;
 
     @Value("${spring.sql.init.mode}")
     private String initMode;
@@ -93,58 +93,58 @@ public class DataLoader implements CommandLineRunner {
 
                 //Add default branch and departments
 
-                Branch branch1 = new Branch();
-                Branch branch2 = new Branch();
-                Branch branch3 = new Branch();
-
-                Department department1_1 = new Department();
-                department1_1.setName("Department-1.1");
-                department1_1.setBranch(branch1);
-
-                Department department1_2 = new Department();
-                department1_2.setName("Department-1.2");
-                department1_2.setBranch(branch1);
-
-                Department department1_3 = new Department();
-                department1_3.setName("Department-1.3");
-                department1_3.setBranch(branch1);
-
-                Department department2_1 = new Department();
-                department2_1.setName("Department-2.1");
-                department2_1.setBranch(branch2);
-
-                Department department2_2 = new Department();
-                department2_2.setName("Department-2.2");
-                department2_2.setBranch(branch2);
-
-                Department department2_3 = new Department();
-                department2_3.setName("Department-2.3");
-                department2_3.setBranch(branch2);
-
-                Department department3_1 = new Department();
-                department3_1.setName("Department-3.1");
-                department3_1.setBranch(branch3);
-
-                Department department3_2 = new Department();
-                department3_2.setName("Department-3.2");
-                department3_2.setBranch(branch3);
-
-                Department department3_3 = new Department();
-                department3_3.setName("Department-3.3");
-                department3_3.setBranch(branch3);
-
-                branch1.setName("Branch1");
-                branch1.setDepartments(List.of(department1_1, department1_2, department1_3));
-
-                branch2.setName("Branch2");
-                branch2.setDepartments(List.of(department2_1, department2_2, department2_3));
-
-                branch3.setName("Branch3");
-                branch3.setDepartments(List.of(department3_1, department3_2, department3_3));
-
-                branchRepository.save(branch1);
-                branchRepository.save(branch2);
-                branchRepository.save(branch3);
+//                Branch branch1 = new Branch();
+//                Branch branch2 = new Branch();
+//                Branch branch3 = new Branch();
+//
+//                Department department1_1 = new Department();
+//                department1_1.setName("Department-1.1");
+//                department1_1.setBranch(branch1);
+//
+//                Department department1_2 = new Department();
+//                department1_2.setName("Department-1.2");
+//                department1_2.setBranch(branch1);
+//
+//                Department department1_3 = new Department();
+//                department1_3.setName("Department-1.3");
+//                department1_3.setBranch(branch1);
+//
+//                Department department2_1 = new Department();
+//                department2_1.setName("Department-2.1");
+//                department2_1.setBranch(branch2);
+//
+//                Department department2_2 = new Department();
+//                department2_2.setName("Department-2.2");
+//                department2_2.setBranch(branch2);
+//
+//                Department department2_3 = new Department();
+//                department2_3.setName("Department-2.3");
+//                department2_3.setBranch(branch2);
+//
+//                Department department3_1 = new Department();
+//                department3_1.setName("Department-3.1");
+//                department3_1.setBranch(branch3);
+//
+//                Department department3_2 = new Department();
+//                department3_2.setName("Department-3.2");
+//                department3_2.setBranch(branch3);
+//
+//                Department department3_3 = new Department();
+//                department3_3.setName("Department-3.3");
+//                department3_3.setBranch(branch3);
+//
+//                branch1.setName("Branch1");
+//                branch1.setDepartments(List.of(department1_1, department1_2, department1_3));
+//
+//                branch2.setName("Branch2");
+//                branch2.setDepartments(List.of(department2_1, department2_2, department2_3));
+//
+//                branch3.setName("Branch3");
+//                branch3.setDepartments(List.of(department3_1, department3_2, department3_3));
+//
+//                branchRepository.save(branch1);
+//                branchRepository.save(branch2);
+//                branchRepository.save(branch3);
 
             }
         }
